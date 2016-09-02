@@ -29,7 +29,7 @@ struct ProvisioningProfile {
                 if let provisioningProfiles = try? fileManager.contentsOfDirectoryAtPath(provisioningProfilesPath as String) {
                     
                     for provFile in provisioningProfiles {
-                        if provFile.pathExtension == "mobileprovision" {
+                        if provFile.pathExtension == "mobileprovision" || provFile.pathExtension == "provisionprofile" {
                             let profileFilename = provisioningProfilesPath.stringByAppendingPathComponent(provFile)
                             if let profile = ProvisioningProfile(filename: profileFilename) {
                                 output.append(profile)
@@ -59,9 +59,20 @@ struct ProvisioningProfile {
                 if let expirationDate = results.valueForKey("ExpirationDate") as? NSDate,
                     creationDate = results.valueForKey("CreationDate") as? NSDate,
                     name = results.valueForKey("Name") as? String,
-                    entitlements = results.valueForKey("Entitlements"),
-                    applicationIdentifier = entitlements.valueForKey("application-identifier") as? String,
-                    periodIndex = applicationIdentifier.characters.indexOf(".") {
+                    entitlements = results.valueForKey("Entitlements")
+                     {
+                        var applicationIdentifier: String! = nil
+                    
+                        if let appID = entitlements.valueForKey("application-identifier") as? String {
+                            applicationIdentifier = appID
+                        } else if let appID = entitlements.valueForKey("com.apple.application-identifier") as? String {
+                            applicationIdentifier = appID
+                        } else {
+                            Log.write("Error getting application-identifier")
+                            return nil
+                        }
+                        let periodIndex = applicationIdentifier!.characters.indexOf(".")!
+                
                         self.filename = filename
                         self.expires = expirationDate
                         self.created = creationDate

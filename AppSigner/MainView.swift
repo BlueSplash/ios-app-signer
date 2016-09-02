@@ -47,7 +47,7 @@ class MainView: NSView, NSURLSessionDataDelegate, NSURLSessionDelegate, NSURLSes
     let chmodPath = "/bin/chmod"
     
     //MARK: Drag / Drop
-    var fileTypes: [String] = ["ipa","deb","app","xcarchive","mobileprovision"]
+    var fileTypes: [String] = ["ipa","deb","app","xcarchive","mobileprovision","provisionprofile"]
     var urlFileTypes: [String] = ["ipa","deb"]
     var fileTypeIsOk = false
     
@@ -57,7 +57,7 @@ class MainView: NSView, NSURLSessionDataDelegate, NSURLSessionDelegate, NSURLSes
             InputFileText.stringValue = filename
             break
             
-        case "mobileprovision":
+        case "mobileprovision", "provisionprofile":
             ProvisioningProfilesPopup.selectItemAtIndex(1)
             checkProfileID(ProvisioningProfile(filename: filename))
             break
@@ -935,7 +935,7 @@ class MainView: NSView, NSURLSessionDataDelegate, NSURLSessionDelegate, NSURLSes
             openDialog.canChooseDirectories = false
             openDialog.allowsMultipleSelection = false
             openDialog.allowsOtherFileTypes = false
-            openDialog.allowedFileTypes = ["mobileprovision"]
+            openDialog.allowedFileTypes = ["mobileprovision", "provisionprofile"]
             openDialog.runModal()
             if let filename = openDialog.URLs.first,
                    profileFilename = filename.path {
